@@ -31,11 +31,11 @@ public class Admincontroller {
 	
 	@Autowired
 	AdminService Service;
-	@RequestMapping(value = "/ad", method = RequestMethod.GET)
+	@RequestMapping(value = "/adminmenu", method = RequestMethod.GET)
 	public String Admin(Locale locale, Model model) {	
 
 		
-		return "ad";
+		return "adminmenu";
 	}
 
 	@RequestMapping(value = "/addauthor", method = RequestMethod.GET)
@@ -437,22 +437,22 @@ public String editBook( @RequestParam("bookId") Integer bookId,
 		
 		return "editbranch";
 	}
-	@RequestMapping(value = "/overwrite", method = RequestMethod.GET)
+	@RequestMapping(value = "/branchselection", method = RequestMethod.GET)
 	public String overwrite(Locale locale, Model model) {	
 		
-		return "overwrite";
+		return "branchselection";
 	}
-	@RequestMapping(value = "/overwrite2", method = RequestMethod.GET)
+	@RequestMapping(value = "/borrowerselection", method = RequestMethod.GET)
 	public String overwrite2(Locale locale, Model model) {	
 		
-		return "overwrite2";
+		return "borrowerselection";
 	}
-	@RequestMapping(value = "/overwrite3", method = RequestMethod.GET)
+	@RequestMapping(value = "/bookselection", method = RequestMethod.GET)
 	public String overwrite3(Locale locale, Model model) {	
 		
-		return "overwrite3";
+		return "bookselection";
 	}
-	@RequestMapping(value = "/over", method = RequestMethod.GET)
+	@RequestMapping(value = "/overwrite", method = RequestMethod.GET)
 	public String over(@RequestParam("branchId")Integer branchId, @RequestParam("cardNo")Integer cardNo,
 			@RequestParam("bookId")Integer bookId, Model model) {	
 		
@@ -470,7 +470,7 @@ public String editBook( @RequestParam("bookId") Integer bookId,
 		String message ="over write successfull";
 		model.addAttribute("message",message);
 		
-		return "overwrite3";
+		return "bookselection";
 	}
 	@RequestMapping(value = "/editBranch", method = RequestMethod.POST)
 	public String editBranch(@RequestParam(value="name",required =false)String name, @RequestParam(value="address",required =false)String address, 

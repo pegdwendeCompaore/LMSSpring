@@ -1,16 +1,17 @@
 <%@page import="org.springframework.web.servlet.support.RequestContextUtils"%>
 <%@page import="org.springframework.context.ApplicationContext"%>
-<%@include file="include.html"%>
+<%@include file="admin.html"%>
 <%@ page import="java.util.*"%>
 <%@ page import="com.gcit.lms.service.AdminService"%>
 <%@ page import="com.gcit.lms.entity.*"%>
 <%
+
+	Integer brId = Integer.parseInt(request.getParameter("branchId"));
 ApplicationContext contex = RequestContextUtils.getWebApplicationContext(request);
 AdminService service = (AdminService) contex.getBean("AdminService") ;
+	List<Borrower> borrower = new ArrayList<Borrower>();
 	
-	List<Branch> branch = new ArrayList<Branch>();
-	
-		branch = service.viewBranch();	
+		borrower = service.viewBorrower(brId);	
 	
 	
 %>
@@ -23,12 +24,8 @@ AdminService service = (AdminService) contex.getBean("AdminService") ;
     padding: 10px;
 }
 </style>
-
-<h2 class ="center">Hello Librarian!</h2>
-<h3 class ="center">Below are a list of Branch to select from.</h3>
-
-
-
+<h2 class ="center">Hello Admin!</h2>
+<h3 class ="center">Below are a list of Borrower to choose from.</h3>
 <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">   
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <link rel="stylesheet" 
@@ -37,43 +34,37 @@ href="http://cdn.datatables.net/1.10.2/css/jquery.dataTables.min.css"></style>
 src="http://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" 
 src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-<div class="center">
-<div class="table-responsive">
-<table id="myTable" class="display table" width="100%" >
+<div class ="center">
+<div class="row">
+	
+		<table  id="myTable" class=table-responsive" width ="100%">
 			<thead>
 				<tr>
 					
-					<th>branch Name</th>
-					<th>branch Address</th>
-					<th>Edit Branch</th>
-					<th>Add Copy</th>
+					<th>borrower Name</th>
+					<th>borrower Address</th>
+					<th>borrower Phone</th>
+					<th>select Borrower</th>
 				</tr>
 			</thead>
 			<tbody>
 				<%
-					for (Branch b : branch) {
+					for (Borrower b : borrower) {
 				%>
 
 				<tr>
 					
-					<td><%=b.getBranchName() %></td>
-					<td><%=b.getBranchAddres() %></td>
-					
+					<td><%=b.getBorrowerName() %></td>
+					<td><%=b.getBorrowerAddress() %></td>
+					<td><%=b.getBorrowerPhone() %></td>
 					
 					<td>
 					
-					<button name="Edit" class="btn btn-sm btn-success"
-					onclick="window.location.href='edit?branchId=<%=b.getBranchId() %>'">Edit</button>
+					<button name="Edit" class="btn btn-sm btn-success" 
+					onclick="window.location.href='bookselection?cardNo=<%=b.getCarNo()%>&branchId=<%=brId%>'">Select</button>
 				
 				
 					</td>
-					
-					<td>
-					
-					<button name="addCopy" class="btn btn-sm btn-danger" 
-							onclick="window.location.href='addcopies?branchId=<%=b.getBranchId()%>'" >Select</button>
-					
-							</td>
 					
 				</tr>
 				<%
@@ -81,15 +72,15 @@ src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></scrip
 				%>
 			</tbody>
 		</table>
-		<script>
+<script>
 $(document).ready(function(){
     $('#myTable').dataTable();
 });
-</script>	
+</script>		
+		
 	</div>
+
 </div>
-
-
 <div class="modal fade bs-example-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -97,13 +88,3 @@ $(document).ready(function(){
     </div>
   </div>
 </div>
-
-<footer id="myFooter" style="margin-top:10px; margin-right:5px;">
-    <div class="w3-container w3-theme-l2 w3-padding-32">
-      <h4>Footer</h4>
-    </div>
-
-    <div class="w3-container w3-theme-l1">
-      <p>Powered by <a href="http://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
-    </div>
-  </footer>

@@ -33,13 +33,13 @@ public class HomeController {
 		
 		model.addAttribute("serverTime", formattedDate );
 		
-		return "home1";
+		return "home";
 	}
-	@RequestMapping(value = "/home1", method = RequestMethod.GET)
+	@RequestMapping(value = "/home", method = RequestMethod.GET)
 	public String home1(Locale locale, Model model) {
 		
 		
-		return "home1";
+		return "home";
 	}
 	
 	@RequestMapping(value = "/admin", method = RequestMethod.GET)

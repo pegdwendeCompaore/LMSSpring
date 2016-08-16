@@ -1,19 +1,21 @@
 <%@page import="org.springframework.web.servlet.support.RequestContextUtils"%>
 <%@page import="org.springframework.context.ApplicationContext"%>
-<%@include file="include.html"%>
+<%@page import="com.gcit.lms.service.BorrowerService"%>
+<%@include file="admin.html"%>
 <%@ page import="java.util.*"%>
 <%@ page import="com.gcit.lms.service.AdminService"%>
 <%@ page import="com.gcit.lms.entity.*"%>
 <%
+Integer brId = Integer.parseInt(request.getParameter("branchId"));
+Integer cardNo = Integer.parseInt(request.getParameter("cardNo"));
+
 ApplicationContext contex = RequestContextUtils.getWebApplicationContext(request);
-AdminService service = (AdminService) contex.getBean("AdminService") ;
-	
-	List<Branch> branch = new ArrayList<Branch>();
-	
-		branch = service.viewBranch();	
-	
-	
+BorrowerService service = (BorrowerService) contex.getBean("BorrowerService") ;
+
+	List<Loans> loans = new ArrayList<Loans>();
+		loans = service.viewtitle(brId, cardNo);	
 %>
+
 <style>
 .center {
     margin: auto;
@@ -24,10 +26,8 @@ AdminService service = (AdminService) contex.getBean("AdminService") ;
 }
 </style>
 
-<h2 class ="center">Hello Librarian!</h2>
-<h3 class ="center">Below are a list of Branch to select from.</h3>
-
-
+<h2 class ="center">Hello Admin!</h2>
+<h3 class = "center">Below are a list of Book to choose from.</h3>
 
 <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">   
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
@@ -37,43 +37,35 @@ href="http://cdn.datatables.net/1.10.2/css/jquery.dataTables.min.css"></style>
 src="http://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" 
 src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-<div class="center">
+<div class ="center">
 <div class="table-responsive">
-<table id="myTable" class="display table" width="100%" >
+	<h2>${message}</h2>
+		<table id="myTable" class=table-responsive" width="100%" >
 			<thead>
 				<tr>
-					
-					<th>branch Name</th>
-					<th>branch Address</th>
-					<th>Edit Branch</th>
-					<th>Add Copy</th>
+					<th>Book ID</th>
+					<th>Book Title</th>
+					<th>Due Date</th>
+					<th>Over Write Due date</th>
 				</tr>
 			</thead>
 			<tbody>
 				<%
-					for (Branch b : branch) {
+					for (Loans l : loans) {
 				%>
 
 				<tr>
-					
-					<td><%=b.getBranchName() %></td>
-					<td><%=b.getBranchAddres() %></td>
-					
+					<td><%=l.getBookId() %></td>
+					<td><%=l.getTitle() %></td>
+					<td><%=l.getDuedate() %></td>
 					
 					<td>
 					
-					<button name="Edit" class="btn btn-sm btn-success"
-					onclick="window.location.href='edit?branchId=<%=b.getBranchId() %>'">Edit</button>
-				
+					<button name="Edit" class="btn btn-sm btn-success" onclick="javascript:location.href='overwrite?bookId=<%=l.getBookId() %>&branchId=<%=brId %>&cardNo=<%=cardNo %>'">
+						Select</button>
+							
 				
 					</td>
-					
-					<td>
-					
-					<button name="addCopy" class="btn btn-sm btn-danger" 
-							onclick="window.location.href='addcopies?branchId=<%=b.getBranchId()%>'" >Select</button>
-					
-							</td>
 					
 				</tr>
 				<%
@@ -81,14 +73,14 @@ src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></scrip
 				%>
 			</tbody>
 		</table>
-		<script>
+<script>
 $(document).ready(function(){
     $('#myTable').dataTable();
 });
-</script>	
+</script>
+		
 	</div>
 </div>
-
 
 <div class="modal fade bs-example-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
   <div class="modal-dialog modal-lg" role="document">
@@ -97,13 +89,3 @@ $(document).ready(function(){
     </div>
   </div>
 </div>
-
-<footer id="myFooter" style="margin-top:10px; margin-right:5px;">
-    <div class="w3-container w3-theme-l2 w3-padding-32">
-      <h4>Footer</h4>
-    </div>
-
-    <div class="w3-container w3-theme-l1">
-      <p>Powered by <a href="http://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
-    </div>
-  </footer>

@@ -42,7 +42,7 @@ src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></scrip
 <table id="myTable" class="display table" width="100%" >
 			<thead>
 				<tr>
-					
+					<th>Branch ID</th>
 					<th>branch Name</th>
 					<th>branch Address</th>
 					<th>Edit Branch</th>
@@ -55,7 +55,7 @@ src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></scrip
 				%>
 
 				<tr>
-					
+					<td><%=b.getBranchId() %></td>
 					<td><%=b.getBranchName() %></td>
 					<td><%=b.getBranchAddres() %></td>
 					

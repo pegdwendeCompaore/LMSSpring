@@ -1,6 +1,6 @@
 <%@page import="org.springframework.web.servlet.support.RequestContextUtils"%>
 <%@page import="org.springframework.context.ApplicationContext"%>
-<%@include file="include.html"%>
+<%@include file="admin.html"%>
 <%@ page import="java.util.*"%>
 <%@ page import="com.gcit.lms.service.AdminService"%>
 <%@ page import="com.gcit.lms.entity.*"%>
@@ -13,7 +13,11 @@ AdminService service = (AdminService) contex.getBean("AdminService") ;
 		branch = service.viewBranch();	
 	
 	
+	
 %>
+
+<h2>Hello Admin!</h2>
+<h2 class ="center">${message}</h2>
 <style>
 .center {
     margin: auto;
@@ -23,9 +27,6 @@ AdminService service = (AdminService) contex.getBean("AdminService") ;
     padding: 10px;
 }
 </style>
-
-<h2 class ="center">Hello Librarian!</h2>
-<h3 class ="center">Below are a list of Branch to select from.</h3>
 
 
 
@@ -37,6 +38,9 @@ href="http://cdn.datatables.net/1.10.2/css/jquery.dataTables.min.css"></style>
 src="http://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" 
 src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+<h3 class="center">Below are a list of Branch.</h3>
+
 <div class="center">
 <div class="table-responsive">
 <table id="myTable" class="display table" width="100%" >
@@ -45,33 +49,54 @@ src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></scrip
 					
 					<th>branch Name</th>
 					<th>branch Address</th>
+					<th>branch book</th>
 					<th>Edit Branch</th>
-					<th>Add Copy</th>
+					<th>Delete Branch</th>
 				</tr>
 			</thead>
 			<tbody>
 				<%
-					for (Branch b : branch) {
+					for (Branch br : branch) {
 				%>
 
 				<tr>
 					
-					<td><%=b.getBranchName() %></td>
-					<td><%=b.getBranchAddres() %></td>
-					
-					
+					<td><%=br.getBranchName() %></td>
+					<td><%=br.getBranchAddres() %></td>	
+					<td>
+						<%List<Book> book = service.viewBranchBook(br.getBranchId()); 
+						
+						if(book!=null&& !book.isEmpty())
+						{
+						for(Book b:book)
+						{
+							%>
+							
+							<%=b.getTitle()+"." %>
+							
+						<% 	
+						}
+						}
+						else 
+						{
+						%>
+						<%="no books." %>
+					<%}
+						
+						%>
+					</td>
 					<td>
 					
-					<button name="Edit" class="btn btn-sm btn-success"
-					onclick="window.location.href='edit?branchId=<%=b.getBranchId() %>'">Edit</button>
+					<button name="Edit" class="btn btn-sm btn-success" 
+					onclick="javascript:location.href='editbranch?branchId=<%=br.getBranchId() %>'">Edit</button>
 				
 				
 					</td>
 					
 					<td>
 					
-					<button name="addCopy" class="btn btn-sm btn-danger" 
-							onclick="window.location.href='addcopies?branchId=<%=b.getBranchId()%>'" >Select</button>
+					<button name="Delete" class="btn btn-sm btn-danger" 
+							onclick="javascript:location.href='deleteBranch?branchId=<%=br.getBranchId() %>'">Delete</button>
 					
 							</td>
 					
@@ -89,7 +114,6 @@ $(document).ready(function(){
 	</div>
 </div>
 
-
 <div class="modal fade bs-example-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -97,13 +121,3 @@ $(document).ready(function(){
     </div>
   </div>
 </div>
-
-<footer id="myFooter" style="margin-top:10px; margin-right:5px;">
-    <div class="w3-container w3-theme-l2 w3-padding-32">
-      <h4>Footer</h4>
-    </div>
-
-    <div class="w3-container w3-theme-l1">
-      <p>Powered by <a href="http://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
-    </div>
-  </footer>
