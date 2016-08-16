@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Chat</title>
+		<link rel="stylesheet" media="screen" href="chati_data/font-awesome.css">
+		<link rel="stylesheet" media="screen" href="chati_data/LibAnswers_widget.css">
+		
+		<script>
+			var springSpace = springSpace || {};
+			springSpace.la = springSpace.la || {};
+		</script>
+		<style>
+			body { margin: 5px; }
+		</style>
+		
+		<style>
+#sound {
+	width:1px;
+	height:1px;
+}
+#msg_con, #chat_txt {
+	border: 1px solid #ccc;
+	outline: none;
+}
+#msg_con {
+	height:180px;
+	display:block;
+	overflow-y:auto;
+	background-color: #fff;
+	border-radius: 2px;
+}
+#msg_con #msgs{
+	height:100%;
+}
+#icons {
+	bottom: 7em;
+	height: 1.5em;
+	margin-top: 2px;
+}
+#txt {
+	bottom:3em;
+}
+#txt form, #txt button {
+	width:100%;
+	height:100%;
+	margin:0;
+}
+#chat_txt {
+	height: 72px;
+	width: 100%;
+	margin: 0;
+	resize: none;
+	padding: 5px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	font: 12px/1.5em Arial, Helvetica, sans-serif;
+	border-radius: 2px;
+	display:block;
+	clear:both;
+}
+#istyping {
+	 color: #999;
+	 float: left;
+	 font-size: 10px;
+	 font-style: italic;
+	 margin: 0px;
+	 height: 2.25em;
+	 padding: 1px;
+	 /* width: 92px; */
+	 overflow: hidden;
+}
+
+#msgs div {
+	line-height: 1.0em;
+	padding: 5px 3px;
+	font-size:12px;
+}
+.lci_sys {
+	margin: 10px 3px;
+	border: 1px dotted #ccc;
+	color: #555;
+}
+.lci_msg{
+	margin: 2px;
+}
+/* for disabled textarea */
+.ci{
+	background-color: #f9f9f9;
+}
+.lci_un {
+	font-weight: bold;
+}
+.lci_me {
+	color: #3278E0;
+}
+.lci_published {
+	color: #ccc;
+	font-size: 10px;
+	font-style: italic;
+	line-height: 1.1em;
+}
+
+#end_text {
+	margin-top: 20px;
+	font-size:12px;
+}
+
+
+#slidebutton_position_selector {
+	margin:0;
+	margin-left:-4px;
+	padding:0;		
+}
+
+/*
+#msgs_status {
+	line-height: 1.0em;
+	padding: 5px 3px;
+	font-size:12px;
+	background: #F9F9F9;
+	border-top:1px solid lightgrey;
+	border-left:1px solid lightgrey;
+	border-right:1px solid lightgrey;
+}
+*/
+
+
+/*
+DB add/edits
+*/
+body { padding: 5px; font-size: 14px; }
+.s-la-widget .container { padding: 0px; }
+.s-la-widget h2 { font-size: 18px; margin-top: 0px; }
+h2#chat_title { margin-bottom: 25px; }
+.s-la-widget label, #file_intro { font-size: 12px; }
+#la_search_box { margin-bottom: 16px; }
+.lci_offlinemsg { font-size: 14px; margin-bottom: 16px; }
+.s-la-widget .tt-dropdown-menu { margin-top: 3px; }
+.s-la-widget .tt-suggestion { font-size: 12px; padding: 3px 8px; }
+.s-la-widget .form-group { margin-bottom: 10px; }
+#login input, #login textarea { font-size: 12px; }
+
+#star_rating .col-xs-3 { padding-left: 5px; padding-right: 5px; text-align: center; }
+#star_rating label { font-weight: normal; font-size: 11px; }
+#star_rating input[type=radio] { margin: 0 auto; }
+.rating_icon { font-size: .8em; }
+i.fa.fa-circle.fa-stack-2x { font-size: 1.8em; padding: .02em; } /* adjusts bg circle on icon */
+
+.lc_chatagain { line-height: 2em; }
+
+#icon_list a { margin-right: 5px; margin-left: 5px; }
+
+#chat_submit { margin-top: 2px; font-size: 11px; line-height: 1; display:block; }
+
+#press_enter_to_send { margin-top: 2px; }
+
+#autoload_yes, #autoload_no { margin-bottom: 16px; }
+
+.margin-top { margin-top: 12px; }
+.margin-bottom { margin-bottom: 12px; }
+
+
+span.la-emoji-contain { height: 16px; display: inline-block; }
+span.la-emoji-contain img { height: 100%; }
+</style>
+
+<!-- 
+ 	widget templates
+ -->
+<script type="text/template" id="template-login-panel">
+	<h2 id="chat_title" style="color:{{ color_head }}">{{ chat_title }}</h2>
+	<form id="chat_login_form">
+	<div class="login_field form-group">
+		<label id="name_label" for="name" class="sr-only">{{ name_label }}</label>
+		<input type="text" class="login_name input-sm form-control" placeholder="{{{ name_label }}}" id="name" />
+	</div>
+
+	{{# if (user1!=null && user1.get('show')==1) {  }}
+	<div class="form-group">
+		<label id="user1_label" for="user1" class="sr-only">{{ user1.get('name') }}</label>
+		{{# if (user1.get('type')=='t') {  }}
+			<input type="text" class="form-control input-sm" placeholder="{{{ user1.get('name') }}}" id="user1" />
+		{{# } else { 
+				print("<select class='form-control input-sm' id='user1'><option value='0'>"+ user1.get('name') + "</option>");
+
+				var items = user1.get('val').split(",");				
+				_.each(items, function(item) {
+					print("<option value='"+item+"'>"+item+"</option>");
+				});
+				print("</select>");				
+		} }}
+	</div>
+	{{# } }}
+
+	{{# if (user2!=null && user2.get('show')==1) {  }}
+	<div class="form-group">
+		<label id="user2_label" for="user2" class="sr-only">{{ user2.get('name') }}</label>
+		{{# if (user2.get('type')=='t') {  }}
+			<input type="text" class="form-control input-sm" placeholder="{{{ user2.get('name') }}}" id="user2" />
+		{{# } else { 
+				print("<select class='form-control input-sm' id='user2'><option value='0'>"+ user2.get('name') + "</option>");
+				var items = user2.get('val').split(",");
+				_.each(items, function(item) {
+					print("<option value='"+item+"'>"+item+"</option>");
+				});
+				print("</select>");				
+		} }}
+	</div>
+	{{# } }}
+
+	{{# if (user3!=null && user3.get('show')==1) {  }}
+	<div class="form-group">
+		<label id="user3_label" for="user3" class="sr-only">{{ user3.get('name') }}</label>
+		{{# if (user3.get('type')=='t') {  }}
+			<input type="text" class="form-control input-sm" placeholder="{{{ user3.get('name') }}}" id="user3" />
+		{{# } else { 
+				print("<select class='form-control input-sm' id='user3'><option value='0'>"+ user3.get('name') + "</option>");
+				var items = user3.get('val').split(",");
+				_.each(items, function(item) {
+					print("<option value='"+item+"'>"+item+"</option>");
+				});
+				print("</select>");				
+		} }}
+	</div>
+	{{# } }}
+	
+	{{# if (online_rule.u > 0) { }}
+		<input type="hidden" name="op_id" value="{{ online_rule.u }}" />
+	{{# } else if (!_.isArray(online_rule.d)) { }}
+		<input type="hidden" name="dept" value="{{ online_rule.d }}" />
+	{{# } else { }}
+		{{# if (online_rule.d.length > 1) { }}
+		<div class="form-group">
+			<label id="dept_label" for="dept">{{ dept_label }}</label>
+			<select class="form-control input-sm" name="dept" id="lc_dept_sel">
+			{{# _.each(online_rule.d, function(dept) {
+				print('<option value="'+dept.id+'">'+dept.name+'</option>');
+			}); }}
+			</select>
+		</div>
+		{{# } else { }}
+			<input type="hidden" name="dept" value="{{ online_rule.d[0].id }}" />
+		{{# } }}
+	{{# } }}
+	
+	{{# if (initial_question) {  }}
+	<div id="initial_question_div" class="form-group">
+		<label id="initial_question_label" class="control-label" for="ques">{{ initial_question_label }}</label>
+		<textarea id="ques" class="form-control input-sm" name="ques">{{ question_text }}</textarea>
+	</div>
+	{{# } }}
+	<div class="form-group">
+		<button type="submit" class="lc_button btn btn-xs col-xs-12" style="color:{{ color_btn }}; background-color:{{ color_head }}; border-color:{{ color_head }};" id="lc_cb">{{ chat_button }}</button> {{# if (fbwidget) {  }}<button type="button" class="lc_button btn btn-sm lc_cancelb" style="color:{{ color_btn }}; background-color:{{ color_head }}; border-color:{{ color_head }};">{{ chatclose_button }}</button>{{# } }}
+	</div>
+	</form>
+	<div class="load_gif hidden"><i class="fa fa-spinner fa-spin"></i><span class="sr-only">Working...</span></div>
+</script>
+
+<!-- Away status pane -->
+<script type="text/template" id="template-away-panel">
+	<h2 id="chat_title" style="color:{{ color_head }}">{{ chat_title }}</h2>
+	<div id="chat_away" class="margin-top margin-bottom">
+		<p>{{ away_message }}</p>
+		<p>
+			{{# if (away_link !== '') { }}
+				<a href="http://{{ domain }}/form.php?queue_id={{ away_queue }}" target="_blank">{{ away_link }}</a>
+			{{# } }}
+		</p>
+	</div>
+
+	<div class="margin-top margin-bottom">
+		<button id="chat_reload" type="button"  class="lc_button btn btn-sm" style="color:{{ color_btn }}; background-color:{{ color_head }}; border-color:{{ color_head }};">{{ reload_button }}</button>
+	</div>
+</script>
+
+<!-- Chatting pane -->
+<script type="text/template" id="template-chat-panel">
+
+	<div class="clearfix"> 
+		<span id="connect_state" class="pull-left" role="status" aria-live="polite" style="color:{{ color_head }}">{{ chat_title }}</span>
+		<a href="#" class="e_icon pull-right" title="End Chat"><i class="fa fa-times"></i><span class="icon-label sr-only">End Chat</span></a>
+	</div> 
+
+	<div class="clearfix" id="msg_con" role="log" aria-live="polite"> 
+		<div id="msgs">
+			{{# if (skip_login) { }}
+				<div id="nologin_message" class="lci_sys">{{ nologin_message }}</div>
+			{{# } }}
+		</div> 
+	</div> 
+
+	<div id="icons" class="clearfix"> 
+		<div id="istyping"></div> 
+		<div id="icon_list" class="pull-right">
+			<a id="peel_out" href="#" title="Pop out"><i class="fa fa-external-link"></i><span class="icon-label sr-only">Pop out chat box</span></a>
+			{{#  if (file_uploads) { }}
+				<a class="f_icon" href="#" title="Send a file" id="file_upload_icon" ><i class="fa fa-paperclip"></i><span class="icon-label sr-only">{{ file_title }}</span></a>
+			{{# } }}
+			{{# if (enable_sound) { }}
+				<a class="s_icon" href="#" title="{{ sound_on }}"><i class="fa fa-volume-up"></i><span class="icon-label sr-only">{{ sound_on }}</span></a>
+			{{# } else { }}
+				<a class="s_icon" href="#" title="{{ sound_off }}"><i class="fa fa-volume-off"></i><span class="icon-label sr-only">{{ sound_off }}</span></a>
+			{{# } }}
+			<span class="load_gif hidden"><i class="fa fa-spinner fa-spin"></i><span class="sr-only">Working...</span></span>
+			<a href="#" class="e_icon" title="End Chat"><i class="fa fa-times"></i><span class="icon-label sr-only">End Chat</span></a>
+		</div>
+		
+	</div>
+	<div id="txt" role="presentation"> 
+		<form id="chat_post_form" method="post"> 
+			<textarea role="textbox" aria-multiline="true" id="chat_txt"></textarea>
+			<button id="chat_submit" class="lc_button btn btn-xs" type="submit" style="color:{{ color_btn }}; background-color:{{ color_head }}; border-color:{{ color_head }};">{{ submit_button }}</button>
+		</form> 
+	</div>
+</script>
+
+
+<script type="text/template" id="template-star-panel">
+	<h2 id="byeMsg" class="color_head margin-bottom" style="color:{{ color_head }}">{{ byeMsg }}</h2>
+
+	{{# if (star_ratings) { }}
+		<form id="comment-form" action="">
+			<div id="star_text" class="margin-bottom">{{ star_text }}</div>
+			<div id="star_rating" class="row clearfix margin-bottom">
+				<div class="col-xs-3">
+					<label for="rating_great" class="control-label">
+						<div class="rating_icon">
+							<span class="fa-stack fa-lg">
+								<i class="fa fa-circle fa-stack-2x" style="color:{{ color_head }}"></i>
+								<i class="fa fa-smile-o fa-stack-2x fa-inverse" style="color:{{ color_btn }}"></i>
+							</span>
+						</div>
+						{{ rate_4 }}
+						<input type="radio" class="radio" value="4" id="rating_great" name="chat_rating">
+					</label>
+				</div>
+				
+				<div class="col-xs-3">
+					<label for="rating_good" class="control-label">
+						<div class="rating_icon">
+							<span class="fa-stack fa-lg">
+								<i class="fa fa-circle fa-stack-2x" style="color:{{ color_head }}"></i>
+								<i class="fa fa-smile-o fa-stack-2x fa-inverse" style="color:{{ color_btn }}"></i>
+							</span>
+						</div>
+						{{ rate_3 }}
+						<input type="radio" class="radio" value="3" id="rating_good" name="chat_rating">
+					</label>
+				</div>
+				
+				<div class="col-xs-3">
+					<label for="rating_soso" class="control-label">
+						<div class="rating_icon">
+							<span class="fa-stack fa-lg">
+								<i class="fa fa-circle fa-stack-2x" style="color:{{ color_head }}"></i>
+								<i class="fa fa-meh-o fa-stack-2x fa-inverse" style="color:{{ color_btn }}"></i>
+							</span>
+						</div>
+						{{ rate_2 }}
+						<input type="radio" class="radio" value="2" id="rating_soso" name="chat_rating">
+					</label>
+				</div>
+				
+				<div class="col-xs-3">
+					<label for="rating_bad" class="control-label">
+						<div class="rating_icon">
+							<span class="fa-stack fa-lg">
+								<i class="fa fa-circle fa-stack-2x" style="color:{{ color_head }}"></i>
+								<i class="fa fa-frown-o fa-stack-2x fa-inverse" style="color:{{ color_btn }}"></i>
+							</span>
+						</div>
+						{{ rate_1 }}
+						<input type="radio" class="radio" value="1" id="rating_bad" name="chat_rating">
+					</label>
+				</div>
+			</div>
+		
+			
+			<div class="form-group">
+				<label for="comment" class="control-label">{{ comments_label }}</label>
+				<textarea id="comment" rows="3" class="form-control input-sm" name="comment"></textarea>
+			</div>
+			<div class="margin-bottom">
+				<button id="com_b" type="submit" class="lc_button btn btn-sm" style="color:{{ color_btn }}; background-color:{{ color_head }}; border-color:{{ color_head }};" id="com_b">{{ comments_button_text }}</button>
+			</div>
+		</form>
+
+	{{# } }}
+
+
+	<div class="margin-bottom clearfix">
+		<a id="email_transcript" class="t_icon t_closed pull-left" href="#">{{ email_trans }} <i class="fa fa-external-link"></i></a>
+		{{# if (fbwidget) {  }}
+			<button type="button" class="lc_button btn btn-xs lc_cancelb pull-right" style="color:{{ color_btn }}; background-color:{{ color_head }}; border-color:{{ color_head }};">{{ chatclose_button }}</button>
+		{{# } }}
+	</div>
+
+</script>
+
+<!-- File upload widget display -->
+<script type="text/template" id="template-file-upload-panel">
+	<h2 class="color_head" style="color:{{ color_head }}">{{ file_title }}</h2>
+	<form id="fileup" name="fileup" method="POST" enctype="multipart/form-data">
+		<div id="file_intro" class="margin-bottom">{{ file_intro }}</div>
+		<div class="form-group">
+			<label for="name" class="control-label">{{ file_label }}</label>
+			<input class="form-control" type="file" name="ufile" id="ufile" size="10" />
+		</div>
+		<div class="form-group">
+			<button type="submit" class="lc_button btn btn-sm" id="lc_fu" style="color:{{ color_btn }}; background-color:{{ color_head }}; border-color:{{ color_head }};">{{ file_action }}</button> <button type="button" class="lc_button btn btn-sm" id="lc_fcan" style="color:{{ color_btn }}; background-color:{{ color_head }}; border-color:{{ color_head }};">{{ cancel_button }}</button>
+	</form>
+</script>
+
+<!-- Offline widget display -->
+<script type="text/template" id="template-chat-offline">
+	<h2 id="offline_text" class="color_head" style="color:{{ color_head }}">{{ offline_text }}</h2>
+	<div id="la_search_box">{{ la_search_box }}</div>
+	<div id="la_hide_msg" class="lci_offlinemsg">{{ la_hide_msg }}</div>
+	<div id="la_hide_msg2" class="lci_offlinemsg">{{ la_hide_msg2 }}</div>
+</script>
+
+<!-- Auto-popup widget intro -->
+<script type="text/template" id="template-chat-auto">
+	<h2 id="autoload_head" class="color_head" style="color:{{ color_head }}">{{ autoload_head }}</h2>
+	<div id="autoload_text">{{ autoload_text }}</div>
+	<div id="autoload_btn" class="margin-top">
+		<button id="autoload_yes" type="button"  class="lc_button btn btn-sm margin-bottom" style="color:{{ color_btn }}; background-color:{{ color_head }}; border-color:{{ color_head }};">{{ autoload_yes }}</button>
+		<button id="autoload_no" type="button"  class="lc_button btn btn-sm" style="color:{{ color_btn }}; background-color:{{ color_head }}; border-color:{{ color_head }};">{{ autoload_no }}</button>
+	</div>
+</script>
+		
+	<style>.ls-button{background-color: #ff7700;}
+body{
+   background-color: transparent !important;
+   font-family: Arial,Helvetica,sans-serif;
+}
+#ques {
+height: 130px;
+}
+
+.s-la-widget .btn-block {
+    background-color: #ff6000;
+    border-color: #cc4c00;
+    color: #fff;
+    font-size: 1em;
+    font-weight: bold;
+    margin: 1em 0;
+}</style></head>
+
+	<body class="s-la-widget" data-widget-id="3967">
+	<div class="widget_base container">
+	<div id="autoload" style="display:none;"></div>
+	<div id="login" style="display:none;"></div>
+	<div id="away" style="display:none;"></div>
+	<div id="chat" style="display:none;"></div>
+	<div id="star" style="display:none;"></div>
+	<div id="file" style="display:none;"></div>
+	<div id="sound" style="display:none;"></div>
+	<div id="offline" style="">
+	<h2 id="offline_text" class="color_head" style="color:#333333"></h2>
+	<div id="la_search_box"></div>
+	<div id="la_hide_msg" class="lci_offlinemsg"><h2>Ask Us</h2><p>Sorry, chat is offline but you can still get help.</p><hr><p><a target="_parent" href="http://libnet.library.okstate.edu/about/contact-us" class="btn btn-default btn-block">Contact Us</a></p></div>
+	<div id="la_hide_msg2" class="lci_offlinemsg"><h2>Call Us</h2><p><i class="fa fa-phone"></i> 405.744.9775</p></div>
+</div>
+	</div>
+	
+
+	<script type="text/javascript" src="chati_data/jquery-1.js"></script>
+	<script type="text/javascript" src="chati_data/bootstrap.js"></script>
+	
+	<script>springSpace.jq = jQuery;</script>
+
+		<script type="text/javascript" src="chati_data/socket.js"></script>
+	<script type="text/javascript" src="chati_data/typeahead.js"></script>
+
+		<script type="text/javascript" src="chati_data/la_searchform.js"></script>
+
+			<script type="text/javascript" src="chati_data/underscore-min.js"></script>
+		<script type="text/javascript" src="chati_data/backbone-min.js"></script>
+	
+
+
+	<script>
+	//@todo we should be able to get rid of all/some of these
+	
+	var DEBUG_CHAT = false;
+	
+	var global = global || {};
+	
+	global.widget_id = 3967;
+	global.widgetInfo = {"id":"3967","iid":"1100","hash":"f96e0a9926aed78ed5fae69e34dba64a","name":"Modx Libnet","ts":"2014-08-19T12:52:22.638Z","uid":195,"ref":"http:\/\/library.okstate.edu\/","key":"b0a7e4f03e53ebf","chat_title":"Ask Us - Chat<!p><small><!--<i class=\"fa fa-mobile fa-lg\"><\/i> (SMS):  <a href=\"sms:4055924128\">405-592-4128<\/a>--><br><a href=\"http:\/\/answers.library.okstate.edu\/\" target=\"_top\">Need more help?<\/a><\/small><\/p><hr\/>","byeMsg":"Thanks for chatting!<\/h2><p><em>Still need some help?<\/em><\/p><h2 >Contact Us<\/h2><p>    <i class=\"fa fa-envelope-o\"><\/i> <a href=\"http:\/\/libapp.okstate.edu\/machform\/view.php?id=11016\" onclick=\"window.open(this.href,  null, 'height=565, width=800, toolbar=0, location=0, status=0, scrollbars=1, resizable=1'); return false;\" target=\"_parent\"> \t Email us<\/a>    <\/p><p><i class=\"fa fa-phone\"><\/i><span> <span id=\"gc-number-0\" class=\"gc-cs-link\" title=\"Call with Google Voice\">405.744.9775<\/span><\/span><\/p><br\/><hr\/>","dept_label":"","name_label":"Name","name_default":"","guest_label":"Guest","width":"225","height":"390","is_personal":false,"chat_button":"Start Chat","done_button":"Chat again","press_enter":"Press ENTER to send","submit_button":"Submit","email_trans":"View\/Email Transcript","offline_text":"","offline_url":"","slidebutton_url":"","slidebutton_url_off":"","slidebutton_text":"Ask Us","slidebutton_text_off":"Offline","slidebutton_position":"r","slidebutton_bcolor":"#3278e0","slidebutton_color":"#ffffff","slidebutton_width":"34","slidebutton_height":"125","la_hide":true,"la_hide_msg":"<h2>Ask Us<\/h2><p>Sorry, chat is offline but you can still get help.<\/p><hr\/><p><a href=\"http:\/\/libnet.library.okstate.edu\/about\/contact-us\" class=\"btn btn-default btn-block\">Contact Us<\/a><\/p>","la_hide_msg2":"<h2 >Call Us<\/h2><p><i class=\"fa fa-phone\"><\/i> 405.744.9775<\/p>","la_search_opt":{"group_id":0,"button":"Search","placeholder":"","label":""},"la_search_box":"","sound_on":"Sound is On (click to toggle)","sound_off":"Sound is Off (click to toggle)","star_text":"Please rate this chat:","rate_1":"Bad","rate_2":"So-so","rate_3":"Good","rate_4":"Great","trans":"Enter an email address to send this chat transcript to:","error_sess":"Error starting session.","error_send":"Error sending this message.","error_tran":"Error sending transcript.","left":" has left the chat","typing":" is typing...","joined":" has joined the chat","initial_question":true,"initial_question_label":"Your Question","comments_label":"Any comments?","comments_button_text":"Submit Feedback","enable_anon":true,"enable_comments":true,"enable_sound":false,"star_ratings":false,"file_uploads":false,"file_title":"Upload File","file_intro":"Note: Maximum file size is 5MB. File is removed after one month, it is not kept permanently.","file_label":"Attach a file","file_action":"Upload","cancel_button":"Cancel","css":"","custom_css":".ls-button{background-color: #ff7700;}\nbody{\n   background-color: transparent !important;\n   font-family: Arial,Helvetica,sans-serif;\n}\n#ques {\nheight: 130px;\n}\n\n.s-la-widget .btn-block {\n    background-color: #ff6000;\n    border-color: #cc4c00;\n    color: #fff;\n    font-size: 1em;\n    font-weight: bold;\n    margin: 1em 0;\n}","color_backg":"","color_head":"#333333","color_btn":"#FFFFFF","color_border":"","user1":{"tag":1,"name":"Email","id":0,"show":1,"required":0,"type":"t","val":""},"user2":{"tag":2,"name":"click to edit","id":0,"show":0,"required":0,"type":"t","val":""},"user3":{"tag":3,"name":"click to edit","id":0,"show":0,"required":0,"type":"t","val":""},"user4":{"tag":4,"name":"click to edit","id":0,"show":0,"required":0,"type":"t","val":""},"user5":{"tag":5,"name":"click to edit","id":0,"show":0,"required":0,"type":"t","val":""},"error_off":"Sorry it doesn't appear any librarians are online... Please try again later.","wait":"Please wait... A librarian will connect shortly!","depart_id":[{"d":11,"u":0}],"depart_dedicated":true,"depart_default_id":"11","widget_type":2,"autoload_time":0,"autoload_head":"Do you need help?","autoload_text":"A librarian is online ready to help.","autoload_yes":"Chat Now","autoload_no":"No Thanks","wtype":2,"isBuilding":true,"missedchat_time":30,"missedchat_message":"We apologize for the delay. Don't want to wait?","missedchat_link":"Submit your question.","missedchat_queue":0,"fbwidget":false,"autopop":false,"peel":"","skip_login":false,"nologin_message":"Type your question in the box below and press Enter to start chatting.","error_message":"Sorry, it looks like you're having a connection issue. Would you like to submit your question for email follow-up?","error_link":"Submit your question.","error_queue":0,"away_message":"Chat is online but the operator is temporarily away. If you don't want to wait, you can submit your question for email follow-up.","away_link":"Submit your question.","away_queue":0,"reload_button":"Recheck Status","onlinerules":[{"d":11,"u":0}],"domain":"answers.library.okstate.edu","base_domain":"v2.libanswers.com","referer_title":"Home","chatclose_button":"Close Chat"}; //used to instantiate widgetModelT model
+	global.departments = {"11":"Reference"};
+	global.consortium = [];
+	global.name = ''; //the patrons name
+	global.typing_end_timeout; 
+	//global.is_typing_currently = false; //boolean, for typing indicator
+	global.role = 'user';
+	global.sys_env = 'prod';
+	global.query_string = "iid=1100&hash=f96e0a9926aed78ed5fae69e34dba64a&online=false&referer_title=Home"; //for peel out widget
+	
+	global.question_text = "";
+	global.autologin = false;
+	
+	global.custom = {};
+	global.custom.template = null;
+	global.custom.template_css = null;
+	
+	global.s3_path = 'laimages.s3.amazonaws.com';
+	
+	var cascadeServer = "https:\/\/cascade2.libchat.com:443";
+
+	</script>
+	
+
+<script type="text/javascript" src="chati_data/chat_client_la_iframe_min.js"></script>
+
+<div ng-non-bindable="" style="width:0;height:0;visibility:hidden;opacity:0;position:absolute;"><object id="kpm_plugin" type="application/x-KPMPlugin"></object></div></body></html>

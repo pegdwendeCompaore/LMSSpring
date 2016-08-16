@@ -1,0 +1,16 @@
+// Springshare API object.
+                function SpringshareAPI(object_id) {
+                        this.div_id = object_id;
+                        this.content = '';
+                }
+                SpringshareAPI.prototype.render = function() {
+                        var content_div = document.getElementById(this.div_id);
+                       
+                        if ( content_div != null ) {
+                                content_div.innerHTML = this.content;
+                        } else {
+                                alert('Content div not found: ' + this.div_id);
+                        }
+                }
+                var obj_api_upc_cid590_iid1625 = new SpringshareAPI('api_upc_cid590_iid1625');
+                obj_api_upc_cid590_iid1625.content = '<h3 class="s-lc-ea-h3">Upcoming Events</h3><ul><li><a  href="http://okstate.libcal.com/event/2695027?hs=a">Library Public Service 101 Training</a><br><span class="s-lc-ea-date">1:00pm - 3:00pm Thursday, August 11, 2016</span></li><li><a  href="http://okstate.libcal.com/event/2683336?hs=a">Library Ice Pop Tour</a><br><span class="s-lc-ea-date">3:30pm - 3:45pm Friday, August 12, 2016</span></li><li><a  href="http://okstate.libcal.com/event/2683378?hs=a">Library Ice Pop Tour</a><br><span class="s-lc-ea-date">3:45pm - 4:00pm Friday, August 12, 2016</span></li><li><a  href="http://okstate.libcal.com/event/2683379?hs=a">Library Ice Pop Tour</a><br><span class="s-lc-ea-date">4:00pm - 4:15pm Friday, August 12, 2016</span></li><li><a  href="http://okstate.libcal.com/event/2683380?hs=a">Library Ice Pop Tour</a><br><span class="s-lc-ea-date">4:15pm - 4:30pm Friday, August 12, 2016</span></li></ul>'; obj_api_upc_cid590_iid1625.render();
